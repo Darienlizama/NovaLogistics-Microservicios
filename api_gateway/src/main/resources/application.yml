@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        # 1. Rutas hacia MS-Usuarios
+        - id: ms-usuarios
+          uri: lb://ms-usuarios
+          predicates:
+            - Path=/api/v1/clientes/**, /api/v1/personal/**, /api/v1/auditoria/**
+
+        # 2. Rutas hacia MS-Operaciones
+        - id: ms-operaciones
+          uri: lb://ms-operaciones
+          predicates:
+            - Path=/api/v1/envios/**, /api/v1/paquete/**, /api/v1/seguimiento/**
+
+        # 3. Rutas hacia MS-Infraestructura
+        - id: ms-infraestructura
+          uri: lb://ms-infraestructura
+          predicates:
+            - Path=/api/v1/sucursal/**, /api/v1/vehiculo/**
+
+        # 4. Rutas hacia MS-Comercial
+        - id: ms-comercial
+          uri: lb://ms-comercial
+          predicates:
+            - Path=/api/v1/precio/**, /api/v1/reclamo/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

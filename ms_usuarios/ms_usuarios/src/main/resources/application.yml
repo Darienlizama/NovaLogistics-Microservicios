@@ -1,10 +1,11 @@
 server:
-  port: 8082
+  port: 8081
 
 spring:
   application:
-    name: ms-operaciones
+    name: ms-usuarios
   
+  # Conexión a tu Base de Datos Oracle con la Wallet
   datasource:
     url: jdbc:oracle:thin:@bdnovalogistic_high?TNS_ADMIN=C:/Users/darie/Downloads/Wallet_BDNOVALOGISTIC
     username: ADMIN
@@ -16,6 +17,7 @@ spring:
       ddl-auto: update
     show-sql: true
 
+# Conexión al Directorio Central (Eureka)
 eureka:
   client:
     service-url:
