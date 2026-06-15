@@ -1,5 +1,7 @@
 spring:
   application:
     name: ms-comercial
+
+    
 server:
   port: 8083
