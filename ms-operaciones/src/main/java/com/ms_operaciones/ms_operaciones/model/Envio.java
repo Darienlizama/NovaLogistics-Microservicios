@@ -21,8 +21,8 @@ public class Envio {
     @Column(unique = true, name = "numero_guia")
     private String numeroGuia;
 
-    @ManyToOne
-    @JoinColumn(name = "id_cliente", nullable = false)
+    //@ManyToOne
+    //@JoinColumn(name = "id_cliente", nullable = false)
     @NotNull(message = "El cliente es obligatorio")
     private Long idcliente; 
 
