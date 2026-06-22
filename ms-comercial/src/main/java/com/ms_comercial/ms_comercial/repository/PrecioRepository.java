@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import com.ms_comercial.ms_comercial.model.Precio;
 
-
 @Repository
 public interface PrecioRepository extends JpaRepository<Precio, Integer>
 {
