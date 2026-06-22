@@ -9,30 +9,32 @@ spring:
       discovery:
         locator:
           enabled: true
-      routes:
-        # 1. Rutas hacia MS-Usuarios
-        - id: ms-usuarios
-          uri: lb://ms-usuarios
-          predicates:
-            - Path=/api/v1/clientes/**, /api/v1/personal/**, /api/v1/auditoria/**
+          lower-case-service-id: true # Obliga a Eureka a leer todo en minúsculas
+      mvc:
+        routes:
+          # 1. Rutas hacia MS-Usuarios (MINÚSCULAS)
+          - id: ms-usuarios
+            uri: lb://ms_usuarios
+            predicates:
+              - Path=/api/v1/clientes/**
 
-        # 2. Rutas hacia MS-Operaciones
-        - id: ms-operaciones
-          uri: lb://ms-operaciones
-          predicates:
-            - Path=/api/v1/envios/**, /api/v1/paquete/**, /api/v1/seguimiento/**
+          # 2. Rutas hacia MS-Operaciones
+          - id: ms-operaciones
+            uri: lb://ms_operaciones
+            predicates:
+              - Path=/api/v1/envios/**
 
-        # 3. Rutas hacia MS-Infraestructura
-        - id: ms-infraestructura
-          uri: lb://ms-infraestructura
-          predicates:
-            - Path=/api/v1/sucursal/**, /api/v1/vehiculo/**
+          # 3. Rutas hacia MS-Infraestructura
+          - id: ms-infraestructura
+            uri: lb://ms_infraestructura
+            predicates:
+              - Path=/api/v1/sucursal/**
 
-        # 4. Rutas hacia MS-Comercial
-        - id: ms-comercial
-          uri: lb://ms-comercial
-          predicates:
-            - Path=/api/v1/precio/**, /api/v1/reclamo/**
+          # 4. Rutas hacia MS-Comercial
+          - id: ms-comercial
+            uri: lb://ms_comercial
+            predicates:
+              - Path=/api/v1/precio/**
 
 eureka:
   client:
