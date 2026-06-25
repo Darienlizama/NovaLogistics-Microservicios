@@ -16,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import com.ms_operaciones.ms_operaciones.client.UsuarioClient;
 import com.ms_operaciones.ms_operaciones.model.Envio;
 import com.ms_operaciones.ms_operaciones.model.Paquete;
 import com.ms_operaciones.ms_operaciones.repository.EnvioRepository;
@@ -36,6 +38,9 @@ public class EnvioServiceTest {
     @Mock
     private PaqueteRepository paqueteRepository;
 
+    @Mock
+    private UsuarioClient usuarioClient;
+
     private Envio createEnvio() {
         Paquete paquete = new Paquete();
         paquete.setId(1L);
@@ -45,6 +50,7 @@ public class EnvioServiceTest {
         Envio envio = new Envio();
         envio.setId(1L);
         envio.setNumeroGuia("NVL-12345");
+        envio.setIdcliente(1L);
         envio.setPaquete(paquete);
         envio.setDireccionDestino("Av. Principal 123");
         envio.setCiudadDestino("Santiago");

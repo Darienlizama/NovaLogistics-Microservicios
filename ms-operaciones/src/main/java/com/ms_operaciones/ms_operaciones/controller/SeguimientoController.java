@@ -35,7 +35,7 @@ public class SeguimientoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SeguimientoDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Seguimiento> buscarPorId(@PathVariable Long id) {
         log.info("Consultando seguimiento ID: {}", id);
         return ResponseEntity.ok(seguimientoService.buscarPorId(id));
     }

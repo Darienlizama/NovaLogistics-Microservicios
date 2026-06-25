@@ -61,14 +61,12 @@ public class SeguimientoService {
         
         return dto;
     }   
+@Transactional
+    public Seguimiento buscarPorId(Long id){
+    return seguimientoRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Seguimiento no encontrado con el ID: " + id));
+}
 
-    public SeguimientoDTO buscarPorId(Long id){
-        log.info("Buscando seguimiento por id: {}", id);
-        Seguimiento seguimiento = seguimientoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Seguimiento no encontrado con el ID: " + id));
-        
-        return convertirDto(seguimiento);
-    }
 
     @Transactional
     public Seguimiento actualizarSeguimiento(Long id, Seguimiento datosNuevos) {

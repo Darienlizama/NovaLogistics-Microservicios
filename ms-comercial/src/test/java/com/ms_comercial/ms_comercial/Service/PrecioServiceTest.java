@@ -16,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.ms_comercial.ms_comercial.model.Precio;
 import com.ms_comercial.ms_comercial.repository.PrecioRepository;
+import com.ms_comercial.ms_comercial.service.PrecioService;
 import com.ms_comercial.ms_comercial.DTO.PrecioDTO;
 
 public class PrecioServiceTest 
@@ -86,7 +87,7 @@ public class PrecioServiceTest
         Precio resultado = precioService.guardar(pr);
 
         assertNotNull(resultado);
-        verify(precioRepository, times(1)).save(any(Precio.class)));
+        verify(precioRepository, times(1)).save(any(Precio.class));
     }
 
 
