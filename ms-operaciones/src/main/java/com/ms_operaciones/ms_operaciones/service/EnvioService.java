@@ -92,13 +92,13 @@ public class EnvioService {
         return dto;
     }
     
-    public EnvioDTO buscarPorId(Long id){
+    public Envio buscarPorId(Long id){
         log.info("Buscando Envio por id...");
         
-        Envio envio = envioRepository.findById(id)
+        return envioRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Envio no encontrado con ID: " + id));
         
-        return convertirDTO(envio);
+       
     }
 
     public Envio actualizarEnvio(Long id, Envio datosNuevos) {

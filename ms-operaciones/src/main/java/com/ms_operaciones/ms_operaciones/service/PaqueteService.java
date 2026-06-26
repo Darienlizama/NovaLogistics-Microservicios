@@ -49,10 +49,10 @@ public class PaqueteService {
     }
 
     @Transactional(readOnly = true)
-    public PaqueteDTO buscarPorId(Long id){
-        Paquete paquete = paqueteRepository.findById(id)
+    public Paquete buscarPorId(Long id){
+        return paqueteRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Paquete no encontrado con el ID: " + id));
-        return convertirDTO(paquete);
+       
     }
 
     @Transactional

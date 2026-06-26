@@ -44,8 +44,8 @@ public class PaqueteController {
     }
     //buscarporid
     @GetMapping("/{id}")
-    public ResponseEntity<PaqueteDTO>buscarPorId(@PathVariable Long id){
-        PaqueteDTO dto=paqueteService.buscarPorId(id);
+    public ResponseEntity<Paquete>buscarPorId(@PathVariable Long id){
+        Paquete dto=paqueteService.buscarPorId(id);
         return new ResponseEntity<>(dto,HttpStatus.OK);
     }
 

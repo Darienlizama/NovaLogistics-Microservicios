@@ -48,8 +48,8 @@ public class EnvioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EnvioDTO>buscarPorId(@PathVariable Long id){
-        EnvioDTO dto=envioService.buscarPorId(id);
+    public ResponseEntity<Envio>buscarPorId(@PathVariable Long id){
+        Envio dto=envioService.buscarPorId(id);
         return new ResponseEntity<>(dto,HttpStatus.OK);
 
     }
