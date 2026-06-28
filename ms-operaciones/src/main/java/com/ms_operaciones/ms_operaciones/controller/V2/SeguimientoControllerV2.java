@@ -101,10 +101,10 @@ public EntityModel<Seguimiento> getseguimientoById(@PathVariable Long id) {
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
-    @Operation(summary = "Eliminar ciudad", description = "Elimina una ciudad por su ID")
+    @Operation(summary = "Eliminar seguimiento", description = "Elimina un seguimiento por su ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Ciudad eliminada exitosamente"),
-            @ApiResponse(responseCode = "404", description = "Ciudad no encontrada")
+            @ApiResponse(responseCode = "204", description = "seguimiento eliminado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "seguimiento no encontrado")
     })
     public ResponseEntity<?> deleteseguimiento(@PathVariable Long id) {
         seguimientoService.eliminarSeguimiento(id);

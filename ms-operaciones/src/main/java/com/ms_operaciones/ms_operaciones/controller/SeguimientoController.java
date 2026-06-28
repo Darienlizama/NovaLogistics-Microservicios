@@ -74,10 +74,10 @@ public class SeguimientoController {
 
     // 5. Eliminar un registro
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar ciudad", description = "Elimina una ciudad por su ID")
+    @Operation(summary = "Eliminar seguimiento", description = "Elimina un seguimiento por su ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Ciudad eliminada exitosamente"),
-            @ApiResponse(responseCode = "404", description = "Ciudad no encontrada")
+            @ApiResponse(responseCode = "204", description = "seguimiento eliminado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "seguimiento no encontrado")
     })
     public ResponseEntity<String> eliminar(@PathVariable Long id) {
         log.info("Petición para eliminar seguimiento ID: {}", id);
