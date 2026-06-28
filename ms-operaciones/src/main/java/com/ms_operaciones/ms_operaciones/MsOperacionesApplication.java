@@ -6,12 +6,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @EnableDiscoveryClient
-@SpringBootApplication
+@SpringBootApplication(exclude = {org.springdoc.core.configuration.SpringDocHateoasConfiguration.class})
 @EnableFeignClients
 public class MsOperacionesApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(MsOperacionesApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(MsOperacionesApplication.class, args);
+    }
 }

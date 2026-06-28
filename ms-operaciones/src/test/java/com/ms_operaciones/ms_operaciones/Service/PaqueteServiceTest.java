@@ -16,12 +16,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import com.ms_operaciones.ms_operaciones.model.Envio;
+import com.ms_operaciones.ms_operaciones.DTO.PaqueteDTO;
 import com.ms_operaciones.ms_operaciones.model.Paquete;
 import com.ms_operaciones.ms_operaciones.repository.PaqueteRepository;
 import com.ms_operaciones.ms_operaciones.service.PaqueteService;
@@ -51,12 +48,21 @@ public class PaqueteServiceTest {
 
 @Test
     public void testGuardarPaquete() {
-        Paquete paquete = createPaquete();
+
+        PaqueteDTO paqueteDTO = new PaqueteDTO();
+        paqueteDTO.setId(1L);
+        paqueteDTO.setDescripcion("paquete de prueba");
+        paqueteDTO.setPeso_kg(4.0);
+
+        Paquete paquete = new Paquete();
+        paquete.setId(1L);
+        paquete.setDescripcion("paquete de prueba");
+        paquete.setPeso_kg(4.0);
         when(paqueteRepository.save(paquete)).thenReturn(paquete);
-        Paquete saved = paqueteService.guardarPaquetes(paquete);
+        Paquete saved = paqueteService.guardarPaquetes(paqueteDTO);
         assertNotNull(saved);
 
-        Paquete savedPaquete = paqueteService.guardarPaquetes(paquete);
+        Paquete savedPaquete = paqueteService.guardarPaquetes(paqueteDTO);
 
         assertNotNull(savedPaquete);
         assertEquals("paquete de prueba", savedPaquete.getDescripcion());
@@ -97,9 +103,12 @@ public class PaqueteServiceTest {
     @Test
     public void testActualizarPaquete() {
         Paquete paqueteExistente = createPaquete();
-        Paquete datosNuevos = createPaquete();
-        datosNuevos.getPeso_kg();
-
+        // Crear DTO con datos nuevos
+        PaqueteDTO datosNuevos = new PaqueteDTO();
+        datosNuevos.setId(1L);
+        datosNuevos.setDescripcion("bien");
+        datosNuevos.setEs_fragil(false);
+        datosNuevos.setPeso_kg(4.0);
         when(paqueteRepository.findById(1L)).thenReturn(Optional.of(paqueteExistente));
         when(paqueteRepository.save(any(Paquete.class))).thenReturn(paqueteExistente);
 

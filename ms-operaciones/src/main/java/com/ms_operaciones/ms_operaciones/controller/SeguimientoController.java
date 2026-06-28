@@ -22,7 +22,7 @@ public class SeguimientoController {
 
     // 1. Crear un nuevo estado (ej: "En camino")
     @PostMapping
-    public ResponseEntity<Seguimiento> agregarSeguimiento(@Valid @RequestBody Seguimiento seguimiento) {
+    public ResponseEntity<Seguimiento> agregarSeguimiento(@Valid @RequestBody SeguimientoDTO seguimiento) {
         log.info("Petición recibida para agregar nuevo estado de seguimiento");
         Seguimiento nuevo = seguimientoService.agregarSeguimiento(seguimiento);
         return new ResponseEntity<>(nuevo, HttpStatus.CREATED);
@@ -42,9 +42,9 @@ public class SeguimientoController {
 
     // 4. Actualizar un estado o ubicación
     @PutMapping("/{id}")
-    public ResponseEntity<Seguimiento> actualizar(@PathVariable Long id, @Valid @RequestBody Seguimiento seguimiento) {
+    public ResponseEntity<Seguimiento> actualizar(@PathVariable Long id, @Valid @RequestBody SeguimientoDTO seguimientodDto) {
         log.info("Petición para actualizar seguimiento ID: {}", id);
-        Seguimiento actualizado = seguimientoService.actualizarSeguimiento(id, seguimiento);
+        Seguimiento actualizado = seguimientoService.actualizarSeguimiento(id, seguimientodDto);
         return ResponseEntity.ok(actualizado);
     }
 

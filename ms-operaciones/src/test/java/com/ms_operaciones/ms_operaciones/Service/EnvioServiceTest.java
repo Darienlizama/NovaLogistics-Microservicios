@@ -8,15 +8,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
+import com.ms_operaciones.ms_operaciones.DTO.EnvioDTO;
 import com.ms_operaciones.ms_operaciones.client.UsuarioClient;
 import com.ms_operaciones.ms_operaciones.model.Envio;
 import com.ms_operaciones.ms_operaciones.model.Paquete;
@@ -58,18 +56,44 @@ public class EnvioServiceTest {
         return envio;
     }
 
-    @Test
-    public void testGuardarEnvio() {
-        Envio envio = createEnvio();
-        when(paqueteRepository.existsById(envio.getPaquete().getId())).thenReturn(true);
-        when(envioRepository.save(envio)).thenReturn(envio);
+   @Test
+public void testGuardarEnvio() {
+    Paquete paquete = new Paquete();
+    paquete.setId(1L);
+    paquete.setDescripcion("Paquete de prueba");
+    paquete.setPeso_kg(2.5);
 
-        Envio savedEnvio = envioService.guardarEnvio(envio);
+    EnvioDTO envioDTO = new EnvioDTO();
+    envioDTO.setId(1L);
+    envioDTO.setNumeroGuia("NVL-12345");
+    envioDTO.setIdcliente(1L);
+    envioDTO.setPaquete(paquete);
+    envioDTO.setDireccionDestino("Av. Principal 123");
+    envioDTO.setCiudadDestino("Santiago");
+    envioDTO.setPrecio(5000.0);
 
-        assertNotNull(savedEnvio);
-        assertEquals("NVL-12345", savedEnvio.getNumeroGuia());
-        assertEquals(5000.0, savedEnvio.getPrecio());
-    }
+    Envio envio = new Envio();
+    envio.setId(1L);
+    envio.setNumeroGuia("NVL-12345");
+    envio.setIdcliente(1L);
+    envio.setPaquete(paquete);
+    envio.setDireccionDestino("Av. Principal 123");
+    envio.setCiudadDestino("Santiago");
+    envio.setPrecio(5000.0);
+
+    // Mockear paqueteRepository, no envioRepository
+    when(paqueteRepository.existsById(paquete.getId())).thenReturn(true);
+
+    // Mockear guardado de envío
+    when(envioRepository.save(any(Envio.class))).thenReturn(envio);
+
+    Envio savedEnvio = envioService.guardarEnvio(envioDTO);
+
+    assertNotNull(savedEnvio);
+    assertEquals("NVL-12345", savedEnvio.getNumeroGuia());
+    assertEquals(5000.0, savedEnvio.getPrecio());
+}
+
 
     @Test
     public void testListaEnvios() {
@@ -104,8 +128,20 @@ public class EnvioServiceTest {
 
     @Test
     public void testActualizarEnvio() {
+
+        Paquete paquete = new Paquete();
+        paquete.setId(1L);
+        paquete.setDescripcion("Paquete de prueba");
+        paquete.setPeso_kg(2.5);
+
         Envio envioExistente = createEnvio();
-        Envio datosNuevos = createEnvio();
+        EnvioDTO datosNuevos = new EnvioDTO();
+        datosNuevos.setId(1L);
+        datosNuevos.setNumeroGuia("NVL-12345");
+        datosNuevos.setIdcliente(1L);
+        datosNuevos.setPaquete(paquete);
+        datosNuevos.setDireccionDestino("Av. Principal 123");
+        datosNuevos.setCiudadDestino("Santiago");
         datosNuevos.setPrecio(8000.0);
 
         when(envioRepository.findById(1L)).thenReturn(Optional.of(envioExistente));

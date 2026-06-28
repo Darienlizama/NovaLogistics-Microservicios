@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -70,18 +71,14 @@ public EntityModel<Seguimiento> getseguimientoById(@PathVariable Long id) {
     return seguimientoAssembler.toModel(seguimiento);
 }
 
-
-
-
-
     @PostMapping(produces = MediaTypes.HAL_JSON_VALUE)
     @Operation(summary = "crear seguimiento", description = "Crea una nuevo seguimiento")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "seguimiento creado exitosamente"),
             @ApiResponse(responseCode = "400", description = "Solicitud inválida")
     })
-    public ResponseEntity<EntityModel<Seguimiento>> createseguimiento(@RequestBody Seguimiento seguimiento) {
-    Seguimiento saved = seguimientoService.agregarSeguimiento(seguimiento);
+    public ResponseEntity<EntityModel<Seguimiento>> createseguimiento(@Valid@RequestBody SeguimientoDTO seguimientodto) {
+    Seguimiento saved = seguimientoService.agregarSeguimiento(seguimientodto);
     return ResponseEntity
             .created(linkTo(methodOn(SeguimientoControllerV2.class).getseguimientoById(saved.getId())).toUri())
             .body(seguimientoAssembler.toModel(saved));
@@ -95,7 +92,7 @@ public EntityModel<Seguimiento> getseguimientoById(@PathVariable Long id) {
             @ApiResponse(responseCode = "200", description = "seguimiento actualizado exitosamente"),
             @ApiResponse(responseCode = "404", description = "seguimiento no encontrado")
     })
-    public ResponseEntity<EntityModel<Seguimiento>> updateseguimiento(@PathVariable Long id, @RequestBody Seguimiento seguimiento) {
+    public ResponseEntity<EntityModel<Seguimiento>> updateseguimiento(@PathVariable Long id, @RequestBody SeguimientoDTO seguimiento) {
         seguimiento.setId(id);
         // asiento.setId(id);
         Seguimiento updatedsSeguimiento = seguimientoService.actualizarSeguimiento(id, seguimiento);

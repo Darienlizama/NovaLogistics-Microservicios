@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ms_operaciones.ms_operaciones.DTO.SeguimientoDTO;
+import com.ms_operaciones.ms_operaciones.model.Envio;
 import com.ms_operaciones.ms_operaciones.model.Seguimiento;
 import com.ms_operaciones.ms_operaciones.repository.EnvioRepository;
 import com.ms_operaciones.ms_operaciones.repository.SeguimientoRepository;
@@ -22,17 +23,21 @@ public class SeguimientoService {
     private EnvioRepository envioRepository; 
 
     @Transactional
-    public Seguimiento agregarSeguimiento(Seguimiento seguimiento){
-        log.info("Agregando nuevo estado de seguimiento...");
-        
-        // CORRECCIÓN: Si NO existe el envío, lanzamos el error
-        if(!envioRepository.existsById(seguimiento.getEnvio().getId())){
-            throw new RuntimeException("Error: El envío asignado al seguimiento no existe.");
-        }
-        
-        return seguimientoRepository.save(seguimiento);
+    public Seguimiento agregarSeguimiento(SeguimientoDTO dto) {
+    Envio envio = dto.getEnvio();
+    if (envio == null || !envioRepository.existsById(envio.getId())) {
+        throw new RuntimeException("Error: El envío asignado al seguimiento no existe.");
     }
 
+    Seguimiento seguimiento = new Seguimiento();
+    seguimiento.setId(dto.getId());
+    seguimiento.setEnvio(dto.getEnvio()); // ← aquí es clave
+    seguimiento.setEstado(dto.getEstado());
+    seguimiento.setUbicacion(dto.getUbicacion());
+    seguimiento.setFecha_hora(dto.getFecha_hora());
+
+    return seguimientoRepository.save(seguimiento);
+}
     @Transactional
     public void eliminarSeguimiento(Long id){
         // CORRECCIÓN: Si NO existe el ID, lanzamos el error
@@ -65,11 +70,12 @@ public class SeguimientoService {
     public Seguimiento buscarPorId(Long id){
     return seguimientoRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Seguimiento no encontrado con el ID: " + id));
+    
 }
 
 
     @Transactional
-    public Seguimiento actualizarSeguimiento(Long id, Seguimiento datosNuevos) {
+    public Seguimiento actualizarSeguimiento(Long id, SeguimientoDTO datosNuevos) {
         log.info("Actualizando registro de seguimiento ID: {}", id);
 
         Seguimiento seguimientoExistente = seguimientoRepository.findById(id)

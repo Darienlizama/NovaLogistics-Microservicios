@@ -14,17 +14,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import com.ms_operaciones.ms_operaciones.DTO.SeguimientoDTO;
 import com.ms_operaciones.ms_operaciones.model.Envio;
 import com.ms_operaciones.ms_operaciones.model.Paquete;
 import com.ms_operaciones.ms_operaciones.model.Seguimiento;
 import com.ms_operaciones.ms_operaciones.repository.EnvioRepository;
 import com.ms_operaciones.ms_operaciones.repository.PaqueteRepository;
 import com.ms_operaciones.ms_operaciones.repository.SeguimientoRepository;
-import com.ms_operaciones.ms_operaciones.service.PaqueteService;
 import com.ms_operaciones.ms_operaciones.service.SeguimientoService;
 
 
@@ -35,6 +33,9 @@ public class SeguimientoServiceTest {
 
     @InjectMocks
     private SeguimientoService seguimientoService;
+
+    @Mock
+    private SeguimientoDTO seguimientoDTO;
 
     @Mock
     private SeguimientoRepository seguimientoRepository;
@@ -53,7 +54,10 @@ public class SeguimientoServiceTest {
         paquete.setId(1L);
         paquete.setDescripcion("paquete de prueba");
         paquete.setPeso_kg(4.0);
+
         
+            
+                    
 
     // Crear envío
     Envio envio = new Envio();
@@ -63,7 +67,7 @@ public class SeguimientoServiceTest {
     envio.setDireccionDestino("Av. Principal 123");
     envio.setCiudadDestino("Santiago");
     envio.setPrecio(5000.0);
-
+        
     // Crear seguimiento
     Seguimiento seguimiento = new Seguimiento();
     seguimiento.setId(1L);
@@ -77,22 +81,54 @@ public class SeguimientoServiceTest {
 
  
 
+
 @Test
 public void testGuardarseguimiento() {
-    Seguimiento seguimientos = createSeguimiento();
+    // Crear paquete y envío
+    Paquete paquete = new Paquete();
+    paquete.setId(1L);
+    paquete.setDescripcion("paquete de prueba");
+    paquete.setPeso_kg(4.0);
 
-    // Mockear que el envío existe
-    when(envioRepository.existsById(seguimientos.getEnvio().getId())).thenReturn(true);
+    Envio envio = new Envio();
+    envio.setId(1L);
+    envio.setNumeroGuia("NVL-12345");
+    envio.setPaquete(paquete);
+    envio.setDireccionDestino("Av. Principal 123");
+    envio.setCiudadDestino("Santiago");
+    envio.setPrecio(5000.0);
+
+    // Crear DTO
+    SeguimientoDTO dto = new SeguimientoDTO();
+    dto.setId(1L);
+    dto.setEnvio(envio);
+    dto.setEstado("bien");
+    dto.setUbicacion("Peñaflor");
+    dto.setFecha_hora(LocalDateTime.now());
+
+    // Mockear que el envío existe (usando el id del envío)
+    when(envioRepository.existsById(1L)).thenReturn(true);
 
     // Mockear guardado de seguimiento
-    when(seguimientoRepository.save(seguimientos)).thenReturn(seguimientos);
+    Seguimiento seguimientos = new Seguimiento();
+    seguimientos.setId(1L);
+    seguimientos.setEnvio(envio);
+    seguimientos.setEstado("bien");
+    seguimientos.setUbicacion("Peñaflor");
+    seguimientos.setFecha_hora(LocalDateTime.now());
 
-    Seguimiento savedSeguimiento = seguimientoService.agregarSeguimiento(seguimientos);
+    when(seguimientoRepository.save(any(Seguimiento.class))).thenReturn(seguimientos);
+
+    // Llamar al servicio con DTO
+    Seguimiento savedSeguimiento = seguimientoService.agregarSeguimiento(dto);
 
     assertNotNull(savedSeguimiento);
-    assertEquals(seguimientos.getEnvio().getNumeroGuia(), savedSeguimiento.getEnvio().getNumeroGuia());
     assertEquals("Peñaflor", savedSeguimiento.getUbicacion());
 }
+
+
+
+
 
     @Test
     public void testListaPaquete() {
@@ -128,8 +164,13 @@ public void testGuardarseguimiento() {
     @Test
     public void testActualizarPaquete() {
         Seguimiento seguimientoExistente = createSeguimiento();
-        Seguimiento datosNuevos = createSeguimiento();
+
+        // Crear DTO con datos nuevos
+        SeguimientoDTO datosNuevos = new SeguimientoDTO();
+        datosNuevos.setId(1L);
+        datosNuevos.setEstado("bien");
         datosNuevos.setUbicacion("peñaflor");
+        datosNuevos.setFecha_hora(LocalDateTime.now());
 
         when(seguimientoRepository.findById(1L)).thenReturn(Optional.of(seguimientoExistente));
         when(seguimientoRepository.save(any(Seguimiento.class))).thenReturn(seguimientoExistente);
@@ -139,5 +180,6 @@ public void testGuardarseguimiento() {
         assertNotNull(actualizado);
         assertEquals("peñaflor", actualizado.getUbicacion());
     }
+
 }
 

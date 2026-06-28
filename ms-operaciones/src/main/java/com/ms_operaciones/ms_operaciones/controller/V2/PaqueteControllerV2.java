@@ -66,7 +66,7 @@ public class PaqueteControllerV2 {
             @ApiResponse(responseCode = "201", description = "Paquete creado exitosamente"),
             @ApiResponse(responseCode = "400", description = "Solicitud inválida")
     })
-    public ResponseEntity<EntityModel<Paquete>> createPaquete(@RequestBody Paquete paquete) {
+    public ResponseEntity<EntityModel<Paquete>> createPaquete(@RequestBody PaqueteDTO paquete) {
         Paquete saved = paqueteService.guardarPaquetes(paquete);
         return ResponseEntity
                 .created(linkTo(methodOn(PaqueteControllerV2.class).getPaqueteById(saved.getId())).toUri())
@@ -79,7 +79,7 @@ public class PaqueteControllerV2 {
             @ApiResponse(responseCode = "200", description = "Paquete actualizado exitosamente"),
             @ApiResponse(responseCode = "404", description = "Paquete no encontrado")
     })
-    public ResponseEntity<EntityModel<Paquete>> updatePaquete(@PathVariable Long id, @RequestBody Paquete paquete) {
+    public ResponseEntity<EntityModel<Paquete>> updatePaquete(@PathVariable Long id, @RequestBody PaqueteDTO paquete) {
         paquete.setId(id);
         Paquete updated = paqueteService.actualizarPaquete(id, paquete);
         return ResponseEntity.ok(paqueteAssembler.toModel(updated));

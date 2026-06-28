@@ -22,14 +22,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/paquete")
+@RequestMapping("/api/V1/paquetes")
 public class PaqueteController {
     @Autowired
     private PaqueteService paqueteService;
 
     //guardar
     @PostMapping
-    public ResponseEntity<Paquete>guardarPaquete(@Valid@RequestBody Paquete paquete){
+    public ResponseEntity<Paquete>guardarPaquete(@Valid@RequestBody PaqueteDTO paquete){
         Paquete nuevo =paqueteService.guardarPaquetes(paquete);
         return new ResponseEntity<>(nuevo, HttpStatus.CREATED);
     }
@@ -58,7 +58,7 @@ public class PaqueteController {
     }
     // Actualizar
     @PutMapping("/{id}")
-    public ResponseEntity<Paquete> actualizar(@PathVariable Long id, @Valid @RequestBody Paquete paquete) {
+    public ResponseEntity<Paquete> actualizar(@PathVariable Long id, @Valid @RequestBody PaqueteDTO paquete) {
         log.info("Petición recibida para actualizar el paquete ID: {}", id);
         Paquete actualizado = paqueteService.actualizarPaquete(id, paquete);
         return ResponseEntity.ok(actualizado);

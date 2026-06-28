@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ms_operaciones.ms_operaciones.DTO.PaqueteDTO;
 import com.ms_operaciones.ms_operaciones.model.Paquete;
+import com.ms_operaciones.ms_operaciones.model.Seguimiento;
 import com.ms_operaciones.ms_operaciones.repository.PaqueteRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +20,13 @@ public class PaqueteService {
     private PaqueteRepository paqueteRepository;
 
     @Transactional
-    public Paquete guardarPaquetes(Paquete paquete){
-        log.info("Guardando Paquete: {}", paquete.getDescripcion());
+    public Paquete guardarPaquetes(PaqueteDTO paquetedDto){
+        log.info("Guardando Paquete: {}", paquetedDto.getDescripcion());
+        Paquete paquete = new Paquete();
+        paquete.setId(paquetedDto.getId());
+        paquete.setDescripcion(paquetedDto.getDescripcion()); // ← aquí es clave
+        paquete.setEs_fragil(paquetedDto.getEs_fragil());
+        paquete.setPeso_kg(paquetedDto.getPeso_kg());
         return paqueteRepository.save(paquete);
     }
     
@@ -56,7 +62,7 @@ public class PaqueteService {
     }
 
     @Transactional
-    public Paquete actualizarPaquete(Long id, Paquete datosNuevos) {
+    public Paquete actualizarPaquete(Long id, PaqueteDTO datosNuevos) {
         Paquete paqueteExistente = paqueteRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Paquete no encontrado con ID: " + id));
 

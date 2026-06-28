@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.ms_operaciones.ms_operaciones.DTO.EnvioDTO;
 import com.ms_operaciones.ms_operaciones.model.Envio;
+import com.ms_operaciones.ms_operaciones.model.Seguimiento;
 import com.ms_operaciones.ms_operaciones.repository.EnvioRepository;
 import com.ms_operaciones.ms_operaciones.repository.PaqueteRepository;
 import com.ms_operaciones.ms_operaciones.client.UsuarioClient; // <-- El Teléfono
@@ -26,8 +27,16 @@ public class EnvioService {
     @Autowired
     private UsuarioClient usuarioClient;
 
-    public Envio guardarEnvio(Envio envio){
+    public Envio guardarEnvio(EnvioDTO envio){
         log.info("Guardando envio...");
+        
+
+        Envio envio2 = new Envio();
+        envio2.setId(envio.getId());
+        envio2.setCiudadDestino(envio.getCiudadDestino()); // ← aquí es clave
+        envio2.setDireccionDestino(envio.getDireccionDestino());
+        envio2.setFecha(envio.getFecha());
+        
 
         if (envio.getIdcliente() != null) {
             try {
@@ -57,7 +66,7 @@ public class EnvioService {
             throw new RuntimeException("El precio del envío debe ser mayor a 0");
         }
         
-        return envioRepository.save(envio);
+        return envioRepository.save(envio2);
     }
 
     public List<Envio>listaEnvios(){
@@ -101,21 +110,20 @@ public class EnvioService {
        
     }
 
-    public Envio actualizarEnvio(Long id, Envio datosNuevos) {
+    public Envio actualizarEnvio(Long id, EnvioDTO datosNuevos) {
         log.info("Actualizando envio con ID: {}", id);
 
         Envio envioNuevo= envioRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("No se puede actualizar: Envio no encontrado con ID: " + id));
 
         // Mapeamos el nuevo idcliente
-        if(datosNuevos.getIdcliente() != null){
-            envioNuevo.setIdcliente(datosNuevos.getIdcliente());
-        }
-        
-        envioNuevo.setPaquete(datosNuevos.getPaquete());
-        envioNuevo.setDireccionDestino(datosNuevos.getDireccionDestino());
         envioNuevo.setCiudadDestino(datosNuevos.getCiudadDestino());
+        envioNuevo.setDireccionDestino(datosNuevos.getDireccionDestino());
+        envioNuevo.setFecha(datosNuevos.getFecha());
+        envioNuevo.setNumeroGuia(datosNuevos.getNumeroGuia());
         envioNuevo.setPrecio(datosNuevos.getPrecio());
+        envioNuevo.setIdcliente(id);
+        
 
         return envioRepository.save(envioNuevo);
     }

@@ -1,10 +1,10 @@
 package com.ms_infraestructura.ms_infraestructura.Service;
 
 import static org.junit.jupiter.api.Assertions.*;   
-import static org.mockito.ArgumentsMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.ms_infraestructura.ms_infraestructura.model.Sucursal;
 import com.ms_infraestructura.ms_infraestructura.repository.SucursalRepository;
+import com.ms_infraestructura.ms_infraestructura.service.SucursalService;
 import com.ms_infraestructura.ms_infraestructura.DTO.SucursalDTO;
 
 
@@ -41,20 +42,20 @@ public class SucursalServiceTest
         sucursalIn.setDireccion("Calle Falsa 123");
 
         Sucursal sucursalOut = new Sucursal();
-        sucursalOut.setId(1L);
+        sucursalOut.setId(1);
         sucursalOut.setNombre("Sucursal 1");
         sucursalOut.setDireccion("Calle Falsa 123");
 
-        when(sucursalRepository.existsByNombre("Sucursal 1")).thenReturn(false);
+        when(sucursalRepository.existsById(1)).thenReturn(false);
         when(sucursalRepository.save(any(Sucursal.class))).thenReturn(sucursalOut);
 
         Sucursal resultado = sucursalService.guardarSucursal(sucursalIn);
 
         assertNotNull(resultado);
-        assertEquals(1L, resultado.getId());
+        assertEquals(1, resultado.getId());
         assertEquals("Sucursal 1", resultado.getNombre());
         assertEquals("Calle Falsa 123", resultado.getDireccion());
-        verify(sucursalRepository, times(1)).existsByNombre("Sucursal 1");
+        verify(sucursalRepository, times(1)).existsById(1);
         verify(sucursalRepository, times(1)).save(any(Sucursal.class));
     }
 
@@ -66,13 +67,13 @@ public class SucursalServiceTest
         sucursalIn.setNombre("Sucursal Existente");
         sucursalIn.setDireccion("Calle Falsa 456");
 
-        when(sucursalRepository.existsByNombre("Sucursal Existente")).thenReturn(true);
+        when(sucursalRepository.existsById(1)).thenReturn(true);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             sucursalService.guardarSucursal(sucursalIn);
         });
         assertEquals("La sucursal con el nombre 'Sucursal Existente' ya existe.", exception.getMessage());
-        verify(sucursalRepository, times(1)).existsByNombre("Sucursal Existente");
+        verify(sucursalRepository, times(1)).existsById(1);
         verify(sucursalRepository, times(0)).save(any());
     
     }

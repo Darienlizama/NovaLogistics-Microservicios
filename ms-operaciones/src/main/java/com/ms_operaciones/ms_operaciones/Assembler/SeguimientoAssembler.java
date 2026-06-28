@@ -19,10 +19,7 @@ public class SeguimientoAssembler implements RepresentationModelAssembler<Seguim
 	public EntityModel<Seguimiento> toModel(Seguimiento seguimiento) {
 		return EntityModel.of(seguimiento,
             linkTo(methodOn(SeguimientoControllerV2.class).getseguimientoById(seguimiento.getId().longValue())).withSelfRel(),
-            linkTo(methodOn(SeguimientoControllerV2.class).getallSeguimiento()).withRel("Seguimiento"),
-            linkTo(methodOn(SeguimientoControllerV2.class).updateseguimiento(seguimiento.getId().longValue(), seguimiento)).withRel("actualizar"),
-            linkTo(methodOn(SeguimientoControllerV2.class).deleteseguimiento(seguimiento.getId().longValue())).withRel("eliminar"),
-            linkTo(methodOn(SeguimientoControllerV2.class).createseguimiento(seguimiento)).withRel("crear")
+            linkTo(methodOn(SeguimientoControllerV2.class).getallSeguimiento()).withRel("Seguimiento")
         );
 	}
 

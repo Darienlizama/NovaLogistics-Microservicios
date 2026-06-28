@@ -15,6 +15,9 @@ public class Sucursal
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+ 
+    @NotBlank(message = "el nombre no puede estar vacio")
+    private String nombre;
 
 
     @NotBlank(message = "La dirección no puede estar vacio!")

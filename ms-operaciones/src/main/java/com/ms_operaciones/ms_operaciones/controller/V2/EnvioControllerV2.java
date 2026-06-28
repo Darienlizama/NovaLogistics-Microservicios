@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -65,8 +66,8 @@ public class EnvioControllerV2 {
             @ApiResponse(responseCode = "201", description = "Envío creado exitosamente"),
             @ApiResponse(responseCode = "400", description = "Solicitud inválida")
     })
-    public ResponseEntity<EntityModel<Envio>> createEnvio(@RequestBody Envio envio) {
-        Envio saved = envioService.guardarEnvio(envio);
+    public ResponseEntity<EntityModel<Envio>> createEnvio(@Valid@RequestBody EnvioDTO envioDTO) {
+        Envio saved = envioService.guardarEnvio(envioDTO);
         return ResponseEntity
                 .created(linkTo(methodOn(EnvioControllerV2.class).getEnvioById(saved.getId())).toUri())
                 .body(envioAssembler.toModel(saved));
@@ -78,7 +79,7 @@ public class EnvioControllerV2 {
             @ApiResponse(responseCode = "200", description = "Envío actualizado exitosamente"),
             @ApiResponse(responseCode = "404", description = "Envío no encontrado")
     })
-    public ResponseEntity<EntityModel<Envio>> updateEnvio(@PathVariable Long id, @RequestBody Envio envio) {
+    public ResponseEntity<EntityModel<Envio>> updateEnvio(@PathVariable Long id, @RequestBody EnvioDTO envio) {
         envio.setId(id);
         Envio updated = envioService.actualizarEnvio(id, envio);
         return ResponseEntity.ok(envioAssembler.toModel(updated));

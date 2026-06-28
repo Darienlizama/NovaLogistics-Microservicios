@@ -28,7 +28,7 @@ public class EnvioController {
     private EnvioService envioService;
 
     @PostMapping
-    public ResponseEntity<Envio>guardarEnvio(@Valid@RequestBody Envio envio){
+    public ResponseEntity<Envio>guardarEnvio(@Valid@RequestBody EnvioDTO envio){
         Envio nuevo=envioService.guardarEnvio(envio);
         return new ResponseEntity<>(nuevo,HttpStatus.CREATED);
 
@@ -56,7 +56,7 @@ public class EnvioController {
 
      // Actualizar
     @PutMapping("/{id}")
-    public ResponseEntity<Envio> actualizar(@PathVariable Long id, @Valid @RequestBody Envio envio) {
+    public ResponseEntity<Envio> actualizar(@PathVariable Long id, @Valid @RequestBody EnvioDTO envio) {
         log.info("Petición recibida para actualizar el Envio ID: {}", id);
         Envio actualizado = envioService.actualizarEnvio(id, envio);
         return ResponseEntity.ok(actualizado);
