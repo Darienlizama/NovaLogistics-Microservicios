@@ -44,6 +44,7 @@ public class ClienteService {
 
     public ClienteDTO convertirADto(Cliente cliente) {
         ClienteDTO dto = new ClienteDTO();
+        dto.setId(cliente.getId()); // 
         dto.setRut(cliente.getRut());
         dto.setNombre(cliente.getNombre());
         dto.setApellido(cliente.getApellido());

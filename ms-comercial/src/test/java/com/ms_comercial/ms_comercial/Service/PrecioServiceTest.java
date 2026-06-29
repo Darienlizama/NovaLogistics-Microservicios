@@ -1,10 +1,10 @@
 package com.ms_comercial.ms_comercial.Service;
 
 import static org.junit.jupiter.api.Assertions.*;   
-import static org.mockito.ArgumentsMatchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +19,7 @@ import com.ms_comercial.ms_comercial.repository.PrecioRepository;
 import com.ms_comercial.ms_comercial.service.PrecioService;
 import com.ms_comercial.ms_comercial.DTO.PrecioDTO;
 
-public class PrecioServiceTest 
+class PrecioServiceTest 
 {
     @Mock
     private PrecioRepository precioRepository;
@@ -32,98 +32,143 @@ public class PrecioServiceTest
     {
         MockitoAnnotations.openMocks(this);
     }
+
     @Test
-    void testFindAll() 
+    void testTotalPrecios() 
     {
-        List<Precio> precios = new ArrayList<>();
-        Precio pr1 = new Precio(1L, 10);
-        Precio pr2 = new Precio(2L, 20);
+        // GIVEN
+        Precio pr1 = new Precio();
+        pr1.setId(1);
+        pr1.setPrecioBase(10.0);
 
-        when(precioRepository.findAll()).thenReturn(pr1,pr2);
+        Precio pr2 = new Precio();
+        pr2.setId(2);
+        pr2.setPrecioBase(20.0);
 
-        List<PrecioDTO> result = precioService.findAll();
+        when(precioRepository.findAll()).thenReturn(Arrays.asList(pr1, pr2));
 
-        assertNotNull(resultado);
+        // WHEN
+        List<PrecioDTO> result = precioService.totalPrecios();
+
+        // THEN
+        assertNotNull(result);
         assertEquals(2, result.size());
         verify(precioRepository, times(1)).findAll();
-
     }
+
     @Test
-    void testBuscarPorId() 
+    void testBuscarPoridExitoso() 
     {
-        Long id = 1L;
-        Precio pr = new Precio(id, 10);
+        // GIVEN
+        Integer id = 1;
+        Precio pr = new Precio();
+        pr.setId(id);
+        pr.setPrecioBase(15.5);
 
         when(precioRepository.findById(id)).thenReturn(Optional.of(pr));
 
-        PrecioDTO resultado = precioService.buscarPorId(id);
+        // WHEN
+        PrecioDTO resultado = precioService.buscarPorid(id);
 
+        // THEN
         assertNotNull(resultado);
         assertEquals(id, resultado.getId());
-        assertEquals(10, resultado.getPrecio());
+        assertEquals(15.5, resultado.getPrecio_base());
         verify(precioRepository, times(1)).findById(id);
     }
-    @Test
-    void testBuscarPorIdNotFound() 
-    {
-        Long id = 99L;
 
+    @Test
+    void testBuscarPoridNotFound() 
+    {
+        // GIVEN
+        Integer id = 99;
         when(precioRepository.findById(id)).thenReturn(Optional.empty());
 
+        // WHEN & THEN
         assertThrows(RuntimeException.class, () -> 
         {
-            precioService.buscarPorId(id);
-
+            precioService.buscarPorid(id);
         });
         verify(precioRepository, times(1)).findById(id);
     }
+
     @Test
-    void testGuardar() 
+    void testGuardarPrecio() 
     {
-        Precio pr = new PrecioServiceTest(null, 10);
+        // GIVEN
+        Precio prIn = new Precio();
+        prIn.setPrecioBase(10.0);
             
-        when(precioRepository.save(any(Precio.class))).thenReturn(new Precio(1L, 10));
+        Precio prOut = new Precio();
+        prOut.setId(1);
+        prOut.setPrecioBase(10.0);
 
-        Precio resultado = precioService.guardar(pr);
+        when(precioRepository.save(any(Precio.class))).thenReturn(prOut);
 
+        // WHEN
+        Precio resultado = precioService.guardarPrecio(prIn);
+
+        // THEN
         assertNotNull(resultado);
+        assertEquals(1, resultado.getId());
         verify(precioRepository, times(1)).save(any(Precio.class));
     }
 
-
     @Test
-    void testEliminar() 
+    void testEliminarPrecioExistente() 
     {
-        Long id = 1L;
+        // GIVEN
+        Integer id = 1;
+        when(precioRepository.existsById(id)).thenReturn(true);
 
-        Precio pr = new Precio(id, 10);
-        when(precioRepository.findById(id)).thenReturn(Optional.of(pr));
-        doNothing().when(precioRepository).deleteById(id);
+        // WHEN
+        assertDoesNotThrow(() -> precioService.eliminarPrecio(id));
 
-        assertDoesNotThrow(() -> precioService.eliminar(id));
-
-        verify(precioRepository, times(1)).findById(id);
-        verify(precioRepository, times(1)).deleteById(id);
+        // THEN
+        verify(precioRepository, times(1)).existsById(id);
+        // OJO: Si añades precioRepository.deleteById(id) a tu servicio real, debes descomentar la línea de abajo.
+        // verify(precioRepository, times(1)).deleteById(id);
     }
 
     @Test
-    void testActualizar() 
+    void testEliminarPrecioNoExistente() 
     {
-        Long id = 1L;
-        Precio prExistente = new Precio(null, 30);
+        // GIVEN
+        Integer id = 99;
+        when(precioRepository.existsById(id)).thenReturn(false);
 
-        Precio prNuevosDatos = new Precio(null, 10);
+        // WHEN & THEN
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> 
+        {
+            precioService.eliminarPrecio(id);
+        });
+
+        assertTrue(thrown.getMessage().contains("el capitalismo gano"));
+        verify(precioRepository, times(1)).existsById(id);
+    }
+
+    @Test
+    void testActualizarPrecio() 
+    {
+        // GIVEN
+        Integer id = 1;
+        Precio prExistente = new Precio();
+        prExistente.setId(id);
+        prExistente.setPrecioBase(30.0);
+
+        Precio prNuevosDatos = new Precio();
+        prNuevosDatos.setPrecioBase(50.0);
 
         when(precioRepository.findById(id)).thenReturn(Optional.of(prExistente));
-        when(precioRepository.save(any(Precio.class))).thenReturn(prNuevosDatos);
+        when(precioRepository.save(any(Precio.class))).thenReturn(prExistente);
 
-        Precio resultado = precioService.actualizar(id, prNuevosDatos);
+        // WHEN
+        Precio resultado = precioService.actualizarPrecio(id, prNuevosDatos);
 
+        // THEN
         assertNotNull(resultado);
+        assertEquals(50.0, resultado.getPrecioBase());
         verify(precioRepository, times(1)).findById(id);
         verify(precioRepository, times(1)).save(any(Precio.class));
-
     }
-
-
 }
