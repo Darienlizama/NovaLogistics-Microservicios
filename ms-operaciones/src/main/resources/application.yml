@@ -6,18 +6,19 @@ spring:
     name: ms-operaciones
   
   datasource:
-    url: jdbc:oracle:thin:@bdnovalogistic_high?TNS_ADMIN=C:\\Users\\Juan\\Music\\Nueva-carpeta
+    url: jdbc:oracle:thin:@bdnovalogistic_high?TNS_ADMIN=C:/Users/darie/Downloads/Wallet_BDNOVALOGISTIC
     username: ADMIN
     password: Novalogistic4590
     driver-class-name: oracle.jdbc.OracleDriver
+  
   jpa:
     database-platform: org.hibernate.dialect.OracleDialect
     hibernate:
       ddl-auto: update
     show-sql: true
-  springdoc:
-    enable-hateoas: false
 
+springdoc:
+  enable-hateoas: false
 
 eureka:
   client:

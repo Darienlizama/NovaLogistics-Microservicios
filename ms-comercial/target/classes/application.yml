@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: ms-operaciones
+    name: ms-comercial
   
   datasource:
     url: jdbc:oracle:thin:@bdnovalogistic_high?TNS_ADMIN=C:/Users/darie/Downloads/Wallet_BDNOVALOGISTIC
