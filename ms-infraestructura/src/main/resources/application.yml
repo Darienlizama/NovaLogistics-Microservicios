@@ -1,0 +1,22 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: ms-infraestructura
+  
+  datasource:
+    url: jdbc:oracle:thin:@bdnovalogistic_high?TNS_ADMIN=C:/Users/darie/Downloads/Wallet_BDNOVALOGISTIC
+    username: ADMIN
+    password: Novalogistic4590
+    driver-class-name: oracle.jdbc.OracleDriver
+  jpa:
+    database-platform: org.hibernate.dialect.OracleDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
