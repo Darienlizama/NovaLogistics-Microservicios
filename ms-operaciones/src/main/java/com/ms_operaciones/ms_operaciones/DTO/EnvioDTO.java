@@ -31,12 +31,5 @@ public class EnvioDTO {
     private String nombreCliente;
     private ClienteexternoDTO cliente;
 
-    public ClienteexternoDTO getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(ClienteexternoDTO cliente) {
-        this.cliente = cliente;
-    }
-
+    
 }
