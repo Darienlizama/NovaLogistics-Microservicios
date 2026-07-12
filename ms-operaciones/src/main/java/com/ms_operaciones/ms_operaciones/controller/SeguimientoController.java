@@ -31,10 +31,16 @@ public class SeguimientoController {
             @ApiResponse(responseCode = "201", description = "seguimiento creado exitosamente"),
             @ApiResponse(responseCode = "400", description = "Solicitud inválida")
     })
-    public ResponseEntity<Seguimiento> agregarSeguimiento(@Valid @RequestBody SeguimientoDTO seguimiento) {
+    public ResponseEntity<?> agregarSeguimiento(@Valid @RequestBody SeguimientoDTO seguimiento) {
         log.info("Petición recibida para agregar nuevo estado de seguimiento");
+        try {
+            
+        
         Seguimiento nuevo = seguimientoService.agregarSeguimiento(seguimiento);
         return new ResponseEntity<>(nuevo, HttpStatus.CREATED);
+    } catch (Exception e) {
+            return new ResponseEntity<>("solicitud invalida", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping
@@ -54,9 +60,15 @@ public class SeguimientoController {
         @ApiResponse(responseCode = "200", description = "seguimiento encontrado exitosamente"),
         @ApiResponse(responseCode = "404", description = "seguimiento no encontrado")
 })
-    public ResponseEntity<Seguimiento> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
         log.info("Consultando seguimiento ID: {}", id);
+        try {
+            
+        
         return ResponseEntity.ok(seguimientoService.buscarPorId(id));
+    } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     // 4. Actualizar un estado o ubicación
@@ -66,10 +78,16 @@ public class SeguimientoController {
             @ApiResponse(responseCode = "200", description = "seguimiento actualizado exitosamente"),
             @ApiResponse(responseCode = "404", description = "seguimiento no encontrado")
     })
-    public ResponseEntity<Seguimiento> actualizar(@PathVariable Long id, @Valid @RequestBody SeguimientoDTO seguimientodDto) {
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody SeguimientoDTO seguimientodDto) {
         log.info("Petición para actualizar seguimiento ID: {}", id);
+        try {
+            
+        
         Seguimiento actualizado = seguimientoService.actualizarSeguimiento(id, seguimientodDto);
         return ResponseEntity.ok(actualizado);
+    } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     // 5. Eliminar un registro
@@ -80,8 +98,14 @@ public class SeguimientoController {
             @ApiResponse(responseCode = "404", description = "seguimiento no encontrado")
     })
     public ResponseEntity<String> eliminar(@PathVariable Long id) {
+        try {
+            
+        
         log.info("Petición para eliminar seguimiento ID: {}", id);
         seguimientoService.eliminarSeguimiento(id);
         return ResponseEntity.ok("Seguimiento con ID " + id + " eliminado con éxito.");
+    } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 }

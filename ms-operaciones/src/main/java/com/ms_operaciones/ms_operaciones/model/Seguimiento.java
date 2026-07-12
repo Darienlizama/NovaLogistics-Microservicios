@@ -19,10 +19,16 @@ public class Seguimiento {
     private Envio envio;
 
     @NotBlank(message = "Debe especificar un estado")
+    @Size(min = 5 , max = 10 , message = "el estado debe tener entre 5 y 10 caracteres")
+    @Column(name = "estado" , nullable = false)
     private String estado; 
 
+    @NotBlank(message = "la ubicacion no debe estar vacia")
+    @Size(min = 20 , max = 50 , message = "la ubicacion debe tener entre 20 y 50 caracteres")
+    @Column(name = "ubicacion" , nullable = false )
     private String ubicacion;
 
+    @Column(name = "fecha_hora")
     private LocalDateTime fecha_hora;
 
     @PrePersist

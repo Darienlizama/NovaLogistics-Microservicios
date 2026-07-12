@@ -30,41 +30,52 @@ public class PaqueteController {
     @Autowired
     private PaqueteService paqueteService;
 
-    //guardar
+    // guardar
     @PostMapping
     @Operation(summary = "Crear paquete", description = "Crea un nuevo paquete")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Paquete creado exitosamente"),
             @ApiResponse(responseCode = "400", description = "Solicitud inválida")
     })
-    public ResponseEntity<Paquete>guardarPaquete(@Valid@RequestBody PaqueteDTO paquete){
-        Paquete nuevo =paqueteService.guardarPaquetes(paquete);
-        return new ResponseEntity<>(nuevo, HttpStatus.CREATED);
+    public ResponseEntity<?> guardarPaquete(@Valid @RequestBody PaqueteDTO paquete) {
+        try {
+
+            Paquete nuevo = paqueteService.guardarPaquetes(paquete);
+            return new ResponseEntity<>(nuevo, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("solicitud invalida", HttpStatus.BAD_REQUEST);
+        }
     }
 
-    //listar
+    // listar
     @GetMapping()
     @Operation(summary = "Listar paquetes", description = "Obtiene una lista de paquetes")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de paquetes obtenida exitosamente"),
             @ApiResponse(responseCode = "204", description = "No hay paquetes disponibles")
     })
-    public ResponseEntity<List<Paquete>>listarPaquetes(){
+    public ResponseEntity<List<Paquete>> listarPaquetes() {
         log.info("consultando lista de envios");
-        List<Paquete>paquetes=paqueteService.totalPaquetes();
-        return new  ResponseEntity<>(paquetes,HttpStatus.OK);
+        List<Paquete> paquetes = paqueteService.totalPaquetes();
+        return new ResponseEntity<>(paquetes, HttpStatus.OK);
 
     }
-    //buscarporid
+
+    // buscarporid
     @GetMapping("/{id}")
     @Operation(summary = "Buscar paquete por ID", description = "Busca un paquete por su ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Paquete encontrado exitosamente"),
             @ApiResponse(responseCode = "404", description = "Paquete no encontrado")
     })
-    public ResponseEntity<Paquete>buscarPorId(@PathVariable Long id){
-        Paquete dto=paqueteService.buscarPorId(id);
-        return new ResponseEntity<>(dto,HttpStatus.OK);
+    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
+        try {
+
+            Paquete dto = paqueteService.buscarPorId(id);
+            return new ResponseEntity<>(dto, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -73,23 +84,32 @@ public class PaqueteController {
             @ApiResponse(responseCode = "204", description = "Paquete eliminado exitosamente"),
             @ApiResponse(responseCode = "404", description = "Paquete no encontrado")
     })
-    public ResponseEntity<String>eliminar(@PathVariable Long id){
-        paqueteService.eliminarPaquetes(id);
-        return ResponseEntity.ok("El Paquete con el ID:"+id+" fue eliminado con exito");
+    public ResponseEntity<String> eliminar(@PathVariable Long id) {
+        try {
 
-
+            paqueteService.eliminarPaquetes(id);
+            return ResponseEntity.ok("El Paquete con el ID:" + id + " fue eliminado con exito");
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
+
     // Actualizar
     @PutMapping("/{id}")
-     @Operation(summary = "Actualizar paquete", description = "Actualiza un paquete existente")
+    @Operation(summary = "Actualizar paquete", description = "Actualiza un paquete existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Paquete actualizado exitosamente"),
             @ApiResponse(responseCode = "404", description = "Paquete no encontrado")
     })
-    public ResponseEntity<Paquete> actualizar(@PathVariable Long id, @Valid @RequestBody PaqueteDTO paquete) {
-        log.info("Petición recibida para actualizar el paquete ID: {}", id);
-        Paquete actualizado = paqueteService.actualizarPaquete(id, paquete);
-        return ResponseEntity.ok(actualizado);
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody PaqueteDTO paquete) {
+        try {
+
+            log.info("Petición recibida para actualizar el paquete ID: {}", id);
+            Paquete actualizado = paqueteService.actualizarPaquete(id, paquete);
+            return ResponseEntity.ok(actualizado);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
 }
