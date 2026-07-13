@@ -2,129 +2,124 @@ package com.ms_operaciones.ms_operaciones.service;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 import com.ms_operaciones.ms_operaciones.DTO.EnvioDTO;
+import com.ms_operaciones.ms_operaciones.DTO.ClienteexternoDTO;
 import com.ms_operaciones.ms_operaciones.model.Envio;
-import com.ms_operaciones.ms_operaciones.model.Seguimiento;
 import com.ms_operaciones.ms_operaciones.repository.EnvioRepository;
 import com.ms_operaciones.ms_operaciones.repository.PaqueteRepository;
-import com.ms_operaciones.ms_operaciones.client.UsuarioClient; // <-- El Teléfono
-
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
 public class EnvioService {
-    
     @Autowired
     private EnvioRepository envioRepository;
-
     @Autowired
     private PaqueteRepository paqueteRepository;
-
     @Autowired
-    private UsuarioClient usuarioClient;
+    private WebClient.Builder webClientBuilder;
 
-    public Envio guardarEnvio(EnvioDTO envio){
-        log.info("Guardando envio...");
-        
+    @Transactional
+    public Envio guardarEnvio(EnvioDTO envioDTO) {
+        // Llamada al microservicio de clientes
+        ClienteexternoDTO cliente = webClientBuilder.build()
+                .get()
+                .uri("http://ms-usuarios/api/v1/clientes/{id}", envioDTO.getIdcliente())
+                .retrieve()
+                .bodyToMono(ClienteexternoDTO.class)
+                .block();
 
-        Envio envio2 = new Envio();
-        envio2.setId(envio.getId());
-        envio2.setCiudadDestino(envio.getCiudadDestino()); // ← aquí es clave
-        envio2.setDireccionDestino(envio.getDireccionDestino());
-        envio2.setFecha(envio.getFecha());
-        
-
-        if (envio.getIdcliente() != null) {
-            try {
-                log.info(" Consultando a MS-USUARIOS si el cliente {} existe...", envio.getIdcliente());
-                
-                // Llamamos a ms-usuarios por internet
-                usuarioClient.obtenerClientePorId(envio.getIdcliente());
-                
-                log.info(" ¡Cliente verificado! Procediendo con el guardado.");
-                
-            } catch (FeignException.NotFound e) {
-                throw new RuntimeException("Error: El cliente asignado al envío no existe en Usuarios.");
-            } catch (FeignException e) {
-                throw new RuntimeException("Error Crítico: No se pudo comunicar con MS-USUARIOS.");
-            }
-        } else {
-            throw new RuntimeException("Error: El ID del cliente es obligatorio.");
+        if (cliente == null) {
+            throw new RuntimeException("Cliente no encontrado");
         }
 
-        // 2. Validar Paquete
-        if (!paqueteRepository.existsById(envio.getPaquete().getId())) {
-            throw new RuntimeException("Error: El paquete asignado al envío no existe.");
-        }
+        // Convertir DTO a entidad y guardar
+        Envio envio = new Envio();
+        envio.setIdcliente(envioDTO.getIdcliente());
+        envio.setPaquete(envioDTO.getPaquete());
+        envio.setDireccionDestino(envioDTO.getDireccionDestino());
+        envio.setCiudadDestino(envioDTO.getCiudadDestino());
+        envio.setPrecio(envioDTO.getPrecio());
+        envio.setEstadoEnvio(true);
 
-        // 3. Validar precio
-        if (envio.getPrecio() == null || envio.getPrecio() <= 0) {
-            throw new RuntimeException("El precio del envío debe ser mayor a 0");
-        }
-        
-        return envioRepository.save(envio2);
+        return envioRepository.save(envio);
     }
 
-    public List<Envio>listaEnvios(){
+    @Transactional(readOnly = true)
+    public List<Envio> listaEnvios() {
         return envioRepository.findAll();
     }
 
-    public void eliminarEnvio(Long id){
-        if(!envioRepository.existsById(id)){
-            throw new RuntimeException("No se puede eliminar: Envio no encontrado con el ID: "+id);
+    @Transactional
+    public void eliminarEnvio(Long id) {
+        if (!envioRepository.existsById(id)) {
+            throw new RuntimeException("No se puede eliminar: Envio no encontrado con el ID: " + id);
         }
-
         envioRepository.deleteById(id);
         log.info("Envio eliminado con exito");
     }
 
-    public EnvioDTO convertirDTO(Envio envio){
+    public EnvioDTO convertirDTO(Envio envio) {
         EnvioDTO dto = new EnvioDTO();
         dto.setId(envio.getId());
         dto.setNumeroGuia(envio.getNumeroGuia());
-        
         // dto.setNombreCliente("Cliente ID: " + envio.getIdcliente());
-        
         if (envio.getPaquete() != null) {
             dto.setDescripcionPaquete(envio.getPaquete().getDescripcion());
             dto.setPesoPaquete(envio.getPaquete().getPeso_kg());
         }
-        
         dto.setDireccionDestino(envio.getDireccionDestino());
         dto.setCiudadDestino(envio.getCiudadDestino());
         dto.setPrecio(envio.getPrecio());
         dto.setFecha(envio.getFecha());
+        try {
+            ClienteexternoDTO clienterecuperado = webClientBuilder.build()
+                    .get()
+                    .uri("http://ms-usuarios/api/v1/clientes/{id}", envio.getIdcliente())
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.empty())
+                    .bodyToMono(ClienteexternoDTO.class)
+                    .block();
+            dto.setCliente(clienterecuperado);
+        } catch (Exception e) {
+            dto.setCliente(null);
+        }
         return dto;
     }
-    
-    public Envio buscarPorId(Long id){
+
+    @Transactional(readOnly = true)
+    public Envio buscarPorId(Long id) {
         log.info("Buscando Envio por id...");
-        
         return envioRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Envio no encontrado con ID: " + id));
-        
-       
+                .orElseThrow(() -> new RuntimeException("Envio no encontrado con ID: " + id));
     }
 
+    @Transactional
     public Envio actualizarEnvio(Long id, EnvioDTO datosNuevos) {
         log.info("Actualizando envio con ID: {}", id);
-
-        Envio envioNuevo= envioRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("No se puede actualizar: Envio no encontrado con ID: " + id));
-
+        Envio envioNuevo = envioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("No se puede actualizar: Envio no encontrado con ID: " + id));
         // Mapeamos el nuevo idcliente
         envioNuevo.setCiudadDestino(datosNuevos.getCiudadDestino());
         envioNuevo.setDireccionDestino(datosNuevos.getDireccionDestino());
         envioNuevo.setFecha(datosNuevos.getFecha());
         envioNuevo.setNumeroGuia(datosNuevos.getNumeroGuia());
         envioNuevo.setPrecio(datosNuevos.getPrecio());
-        envioNuevo.setIdcliente(id);
-        
+        envioNuevo.setIdcliente(datosNuevos.getIdcliente());
+        return envioRepository.save(envioNuevo);
+    }
 
+    @Transactional
+    public Envio actualizarestado(Long id, EnvioDTO datonuevo) {
+        log.info("Actualizando el estado con el envio con ID: {}", id);
+        Envio envioNuevo = envioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("No se puede actualizar: Estado no encontrado con ID: " + id));
+        envioNuevo.setEstadoEnvio(datonuevo.isEstadoEnvio());
         return envioRepository.save(envioNuevo);
     }
 }

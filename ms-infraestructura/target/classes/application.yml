@@ -6,7 +6,7 @@ spring:
     name: ms-infraestructura
   
   datasource:
-    url: jdbc:oracle:thin:@bdnovalogistic_high?TNS_ADMIN=C:/Users/darie/Downloads/Wallet_BDNOVALOGISTIC
+    url: jdbc:oracle:thin:@bdnovalogistic_high?TNS_ADMIN=C:/Users/Juan/Music/Nueva-carpeta
     username: ADMIN
     password: Novalogistic4590
     driver-class-name: oracle.jdbc.OracleDriver

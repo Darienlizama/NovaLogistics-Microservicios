@@ -27,7 +27,6 @@ import com.ms_operaciones.ms_operaciones.service.SeguimientoService;
 
 
 
-@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public class SeguimientoServiceTest {
 
@@ -66,7 +65,7 @@ public class SeguimientoServiceTest {
     envio.setPaquete(paquete);
     envio.setDireccionDestino("Av. Principal 123");
     envio.setCiudadDestino("Santiago");
-    envio.setPrecio(5000.0);
+    envio.setPrecio(5000);
         
     // Crear seguimiento
     Seguimiento seguimiento = new Seguimiento();
@@ -96,7 +95,7 @@ public void testGuardarseguimiento() {
     envio.setPaquete(paquete);
     envio.setDireccionDestino("Av. Principal 123");
     envio.setCiudadDestino("Santiago");
-    envio.setPrecio(5000.0);
+    envio.setPrecio(5000);
 
     // Crear DTO
     SeguimientoDTO dto = new SeguimientoDTO();

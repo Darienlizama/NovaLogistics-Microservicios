@@ -2,27 +2,34 @@ package com.ms_operaciones.ms_operaciones.Service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient.RequestHeadersUriSpec;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.ms_operaciones.ms_operaciones.DTO.ClienteexternoDTO;
 import com.ms_operaciones.ms_operaciones.DTO.EnvioDTO;
-import com.ms_operaciones.ms_operaciones.client.UsuarioClient;
 import com.ms_operaciones.ms_operaciones.model.Envio;
 import com.ms_operaciones.ms_operaciones.model.Paquete;
 import com.ms_operaciones.ms_operaciones.repository.EnvioRepository;
 import com.ms_operaciones.ms_operaciones.repository.PaqueteRepository;
 import com.ms_operaciones.ms_operaciones.service.EnvioService;
 
-@ActiveProfiles("test")
+import reactor.core.publisher.Mono;
+
 
 @ExtendWith(MockitoExtension.class)
 public class EnvioServiceTest {
@@ -37,7 +44,9 @@ public class EnvioServiceTest {
     private PaqueteRepository paqueteRepository;
 
     @Mock
-    private UsuarioClient usuarioClient;
+    private WebClient.Builder webClientBuilder;
+
+    
 
     private Envio createEnvio() {
         Paquete paquete = new Paquete();
@@ -52,48 +61,45 @@ public class EnvioServiceTest {
         envio.setPaquete(paquete);
         envio.setDireccionDestino("Av. Principal 123");
         envio.setCiudadDestino("Santiago");
-        envio.setPrecio(5000.0);
+        envio.setPrecio(5000);
+        envio.setEstadoEnvio(false);
         return envio;
     }
 
-   @Test
-public void testGuardarEnvio() {
-    Paquete paquete = new Paquete();
-    paquete.setId(1L);
-    paquete.setDescripcion("Paquete de prueba");
-    paquete.setPeso_kg(2.5);
+    @Test
+    public void testGuardarEnvio() {
 
-    EnvioDTO envioDTO = new EnvioDTO();
-    envioDTO.setId(1L);
-    envioDTO.setNumeroGuia("NVL-12345");
-    envioDTO.setIdcliente(1L);
-    envioDTO.setPaquete(paquete);
-    envioDTO.setDireccionDestino("Av. Principal 123");
-    envioDTO.setCiudadDestino("Santiago");
-    envioDTO.setPrecio(5000.0);
+        Paquete paquete = new Paquete();
+        paquete.setId(1L);
 
-    Envio envio = new Envio();
-    envio.setId(1L);
-    envio.setNumeroGuia("NVL-12345");
-    envio.setIdcliente(1L);
-    envio.setPaquete(paquete);
-    envio.setDireccionDestino("Av. Principal 123");
-    envio.setCiudadDestino("Santiago");
-    envio.setPrecio(5000.0);
+        EnvioDTO envioDTO = new EnvioDTO();
+        envioDTO.setNumeroGuia("NVL-12345");
+        envioDTO.setIdcliente(1L);
+        envioDTO.setPaquete(paquete);
+        envioDTO.setDireccionDestino("Av. Principal 123");
+        envioDTO.setCiudadDestino("Santiago");
+        envioDTO.setPrecio(5000);
+        envioDTO.setEstadoEnvio(false);
 
-    // Mockear paqueteRepository, no envioRepository
-    when(paqueteRepository.existsById(paquete.getId())).thenReturn(true);
+        Envio envio = new Envio();
+        envio.setId(1L);
+        envio.setNumeroGuia("NVL-12345");
+        envio.setIdcliente(1L);
+        envio.setPaquete(paquete);
+        envio.setDireccionDestino("Av. Principal 123");
+        envio.setCiudadDestino("Santiago");
+        envio.setPrecio(5000);
+        envio.setEstadoEnvio(false);
 
-    // Mockear guardado de envío
-    when(envioRepository.save(any(Envio.class))).thenReturn(envio);
+        doReturn(true).when(paqueteRepository).existsById(paquete.getId());
+        doReturn(envio).when(envioRepository).save(any(Envio.class));
 
-    Envio savedEnvio = envioService.guardarEnvio(envioDTO);
+        Envio savedEnvio = envioService.guardarEnvio(envioDTO);
 
-    assertNotNull(savedEnvio);
-    assertEquals("NVL-12345", savedEnvio.getNumeroGuia());
-    assertEquals(5000.0, savedEnvio.getPrecio());
-}
-
+        assertNotNull(savedEnvio);
+        assertEquals("NVL-12345", savedEnvio.getNumeroGuia());
+        assertEquals(5000, savedEnvio.getPrecio());
+    }
 
     @Test
     public void testListaEnvios() {
@@ -142,7 +148,8 @@ public void testGuardarEnvio() {
         datosNuevos.setPaquete(paquete);
         datosNuevos.setDireccionDestino("Av. Principal 123");
         datosNuevos.setCiudadDestino("Santiago");
-        datosNuevos.setPrecio(8000.0);
+        datosNuevos.setPrecio(8000);
+        datosNuevos.setEstadoEnvio(true);
 
         when(envioRepository.findById(1L)).thenReturn(Optional.of(envioExistente));
         when(envioRepository.save(any(Envio.class))).thenReturn(envioExistente);
@@ -150,6 +157,34 @@ public void testGuardarEnvio() {
         Envio actualizado = envioService.actualizarEnvio(1L, datosNuevos);
 
         assertNotNull(actualizado);
-        assertEquals(8000.0, actualizado.getPrecio());
+        assertEquals(8000, actualizado.getPrecio());
+    }
+
+    @Test
+    public void testactualizarestado() {
+        Paquete paquete = new Paquete();
+        paquete.setId(1L);
+        paquete.setDescripcion("Paquete de prueba");
+        paquete.setPeso_kg(2.5);
+
+        Envio envioExistente = createEnvio();
+        EnvioDTO datosNuevos = new EnvioDTO();
+        datosNuevos.setId(1L);
+        datosNuevos.setNumeroGuia("NVL-12345");
+        datosNuevos.setIdcliente(1L);
+        datosNuevos.setPaquete(paquete);
+        datosNuevos.setDireccionDestino("Av. Principal 123");
+        datosNuevos.setCiudadDestino("Santiago");
+        datosNuevos.setPrecio(5000);
+        datosNuevos.setEstadoEnvio(true);
+
+        when(envioRepository.findById(1L)).thenReturn(Optional.of(envioExistente));
+        when(envioRepository.save(any(Envio.class))).thenReturn(envioExistente);
+
+        Envio actualizado = envioService.actualizarestado(1L, datosNuevos);
+
+        assertNotNull(actualizado);
+        assertEquals(true, actualizado.isEstadoEnvio());
+        verify(envioRepository).save(envioExistente);
     }
 }

@@ -14,7 +14,8 @@ public class EnvioDTO {
     private String direccionDestino;
     private String ciudadDestino;
     private LocalDateTime fecha;
-    private Double precio;
+    private int precio;
+    private boolean estadoEnvio;
 
     // Campo que faltaba
     private Long idcliente;
@@ -28,4 +29,7 @@ public class EnvioDTO {
 
     // Opcional: nombreCliente si quieres mostrarlo en la respuesta
     private String nombreCliente;
+    private ClienteexternoDTO cliente;
+
+    
 }

@@ -25,7 +25,6 @@ import com.ms_operaciones.ms_operaciones.service.PaqueteService;
 
 
 
-@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public class PaqueteServiceTest {
 
