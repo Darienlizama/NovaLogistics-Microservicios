@@ -1,44 +1,79 @@
-NovaLogistics - Sistema de Gestión Logística
-NovaLogistics es una solución integral basada en Java Spring Boot diseñada para gestionar operaciones logísticas. El sistema utiliza una arquitectura de servicios para manejar el registro de clientes, seguimiento de envíos y gestión de flotas.
+🚀 NovaLogistics: Sistema de Gestión Logística Inteligente
+NovaLogistics es una solución integral orientada a microservicios diseñada para la optimización de procesos logísticos. El sistema permite gestionar desde el registro de usuarios y personal hasta la trazabilidad de envíos, utilizando una arquitectura moderna, reactiva y distribuida.
 
-Tecnologías Utilizadas
-Backend: Java 21, Spring Boot 3.4.1
-Base de Datos: Oracle Database 19c
-Persistencia: Spring Data JPA / Hibernate
-Herramientas: Postman, Maven, Git/GitHub
-Microservicios Implementados
-Clientes: Registro de usuarios.
-Auditoría: Registro de eventos de seguridad.
-Vehículos: Administración de flota.
-Personal: Gestión de trabajadores.
-Precios: Tarifas base.
-Reclamos: Soporte al cliente.
-Seguimiento: Trazabilidad de envíos.
-Sucursales: Centros de distribución.
-Envíos: Módulo de transporte.
-Paquetes: Detalle de carga.
-Guía de Trabajo (Comandos Git)
-Usa estos comandos en la terminal de VS Code para gestionar el proyecto:
+🏗️ Arquitectura del Sistema
+El sistema ha evolucionado hacia un modelo de microservicios independientes, garantizando escalabilidad y alta disponibilidad. Los servicios se comunican entre sí utilizando WebClient para operaciones asíncronas y se despliegan mediante Docker.
 
-Para descargar el proyecto por primera vez:
-git clone [https://github.com/Darienlizama/NovaLogistics.git](https://github.com/Darienlizama/NovaLogistics.git)
+Microservicios Implementados:
+Eureka Server: Servidor de descubrimiento para el registro y monitoreo de servicios.
 
-# 1. Preparar los archivos modificados
-git add .
+API Gateway: Punto de entrada único para el enrutamiento y la seguridad.
 
-# 2. Registrar el avance con un mensaje descriptivo
-git commit -m "Descripción de los cambios realizados"
+MS Usuarios: Gestión de clientes, personal y seguridad.
 
-# 3. Actualizar con cambios de otros compañeros
-git pull origin main
+MS Operaciones: Orquestación de logística, envíos y paquetería.
 
-# 4. Subir tus cambios a la nube
-git push origin main
+MS Comercial: Gestión de transacciones, presupuestos y tarifas.
 
-## ✒️ Autores
-* **Darien Lizama** - [Darienlizama](https://github.com/Darienlizama)
-* **Juan Pablo Sagredo**
-* **Gerardo Silva**
+MS Infraestructura: Mantenimiento y recursos del sistema.
 
----
+Módulos Complementarios: Auditoría, Reclamos, Seguimiento, Sucursales y Gestión de Vehículos.
+
+🛠️ Tecnologías Utilizadas
+Backend: Java 21, Spring Boot 4.0.6, Spring Cloud.
+
+Persistencia: Oracle Database 19c (Cloud) con Oracle Wallet para seguridad.
+
+Comunicación: Spring WebFlux (WebClient).
+
+Orquestación: Docker & Docker Compose.
+
+Herramientas: Maven, Postman, Git/GitHub.
+
+🚀 Despliegue Local
+Para ejecutar el entorno completo de NovaLogistics, asegúrate de tener instalado Docker Desktop.
+
+Clona el repositorio:
+
+Bash
+git clone https://github.com/Darienlizama/NovaLogistics-Microservicios.git
+Preparación: Asegúrate de tener la carpeta Wallet_BDNOVALOGISTIC configurada dentro de cada microservicio que requiera conexión a base de datos.
+
+Lanzar el ecosistema: Desde la raíz del proyecto, ejecuta:
+
+Bash
+docker compose up --build
+Acceso a Servicios:
+
+Eureka Dashboard: http://localhost:8761
+
+API Gateway: http://localhost:8080
+
+📦 Estructura del Repositorio
+Plaintext
+├── api_gateway/          # Enrutamiento y seguridad
+├── eureka_server/        # Service Discovery
+├── ms_usuarios/          # Gestión de usuarios
+├── ms_operaciones/       # Lógica logística y envíos
+├── ms_comercial/         # Módulo comercial
+├── ms_infraestructura/   # Soporte de recursos
+└── docker-compose.yml    # Orquestación global
+✒️ Guía de Trabajo Git
+Utiliza estos comandos en la terminal de VS Code para mantener el proyecto sincronizado:
+
+Preparar archivos: git add .
+
+Confirmar cambios: git commit -m "Descripción de tu avance"
+
+Traer cambios de compañeros: git pull origin main
+
+Subir cambios a la nube: git push origin main
+
+👥 Autores
+Darien Lizama 
+
+Juan Pablo Sagredo
+
+Gerardo Silva
+
 Proyecto Académico - 2026.
