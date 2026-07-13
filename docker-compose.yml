@@ -1,0 +1,77 @@
+version: '3.8'
+# Definimos una red personalizada para que nuestros contenedores puedan verse entre sí
+networks:
+  novalogistic-net:
+    driver: bridge
+
+services:
+  # EUREKA SERVER 
+  eureka-server:
+    # Docker construirá la imagen buscando el Dockerfile dentro de esta carpeta
+    build: ./eureka_server
+    container_name: eureka-server
+    # Exponemos el puerto para poder ver el dashboard en nuestro navegador
+    ports:
+      - "8761:8761"
+    networks:
+      - novalogistic-net
+    # Opcional: Le damos un healthcheck para que los demás sepan cuando está listo
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. MICROSERVICIO USUARIOS
+  ms-usuarios:
+    build: ./ms_usuarios
+    container_name: ms-usuarios
+    ports:
+      - "8081:8081"
+    networks:
+      - novalogistic-net
+    # Le decimos a Docker que espere a que Eureka esté "saludable" antes de iniciar este ms
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    # Variables de entorno que sobrescribirán tu application.yml
+    environment:
+      # Obligamos a que se registre usando el nombre del contenedor de Eureka en la red de Docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+
+  # 3. MICROSERVICIO OPERACIONES (Ejemplo adicional)
+  ms-operaciones:
+    # Asumiendo que tu carpeta se llama ms_operaciones
+    build: ./ms_operaciones
+    container_name: ms-operaciones
+    ports:
+      - "8084:8084" 
+    networks:
+      - novalogistic-net
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+
+  # 4. API GATEWAY 
+  api-gateway:
+    build: ./api_gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - novalogistic-net
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      # También podrías hacer que dependa de los MS, pero con Eureka basta
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+
+# Nota importante sobre Oracle Wallet:
+# Si usaste la "Opción B" (Volúmenes) en lugar de copiar la Wallet dentro de cada Dockerfile,
+# debes agregar la sección 'volumes' en cada microservicio que conecte a BD.
+# Ejemplo (descomentar y ajustar ruta si es necesario):
+#    volumes:
+#      - /ruta/absoluta/a/tu/Wallet_BDNOVALOGISTIC:/app/Wallet_BDNOVALOGISTIC
